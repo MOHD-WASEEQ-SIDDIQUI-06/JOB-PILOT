@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.env
+.env.*
+
+# Node / frontend
+node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+
+# OS/editor
+.DS_Store
+.vscode/
+*.swp
+*.swo
+
+# Build artifacts
+*.log
+coverage/
+
+# Local secrets
+secrets/
+*.json
+!package-lock.json
+!tsconfig*.json
+
+# Google Cloud / Firebase credentials
+service-account*.json
+*firebase*.json
+.gcloud/
+.env
+.env.*
+# Pub/Sub local demo artifacts
+pubsub-local-*.json

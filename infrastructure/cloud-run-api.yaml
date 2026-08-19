@@ -1,0 +1,25 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: jobpilot-api
+spec:
+  template:
+    spec:
+      serviceAccountName: jobpilot-api-runtime
+      containers:
+        - image: REGION-docker.pkg.dev/PROJECT_ID/jobpilot/jobpilot-api:IMAGE_TAG
+          ports:
+            - containerPort: 8080
+          env:
+            - name: APP_NAME
+              value: jobpilot-api
+            - name: ENVIRONMENT
+              value: production
+            - name: WORKFLOW_REPOSITORY_MODE
+              value: firestore
+            - name: WORKFLOW_COLLECTION
+              value: jobpilot-workflows
+            - name: PUBSUB_MODE
+              value: google
+            - name: PUBSUB_TOPIC
+              value: jobpilot-workflows
