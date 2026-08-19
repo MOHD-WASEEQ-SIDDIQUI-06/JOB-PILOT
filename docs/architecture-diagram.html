@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>JobPilot Architecture</title>
+  <style>
+    :root { --ink: #17212b; --muted: #5c6b73; --paper: #f7f5ef; --line: #9eaaa8; --teal: #0f766e; --teal-soft: #d7f1ec; --amber: #b45309; --amber-soft: #fff0d0; --blue: #1d4ed8; --blue-soft: #e0eaff; }
+    * { box-sizing: border-box; }
+    body { margin: 0; width: 1600px; height: 1000px; background: var(--paper); color: var(--ink); font-family: Georgia, 'Times New Roman', serif; }
+    .page { width: 1600px; height: 1000px; padding: 64px 74px; position: relative; overflow: hidden; }
+    .eyebrow { font: 700 16px Arial, sans-serif; letter-spacing: 2px; text-transform: uppercase; color: var(--teal); }
+    h1 { margin: 8px 0 10px; font-size: 56px; line-height: 1; letter-spacing: 0; }
+    .subtitle { margin: 0; width: 760px; color: var(--muted); font: 20px/1.45 Arial, sans-serif; }
+    .rule { position: absolute; left: 74px; right: 74px; top: 196px; border-top: 2px solid var(--ink); }
+    .label { font: 700 14px Arial, sans-serif; letter-spacing: 1px; text-transform: uppercase; }
+    .box { position: absolute; border: 2px solid var(--ink); border-radius: 12px; padding: 20px 22px; background: white; box-shadow: 5px 5px 0 rgba(23,33,43,.10); }
+    .box h2 { margin: 0 0 7px; font-size: 25px; }
+    .box p { margin: 0; color: var(--muted); font: 16px/1.35 Arial, sans-serif; }
+    .frontend { left: 74px; top: 292px; width: 240px; background: var(--blue-soft); }
+    .api { left: 418px; top: 260px; width: 306px; height: 144px; background: var(--teal-soft); }
+    .pubsub { left: 804px; top: 260px; width: 250px; height: 144px; background: var(--amber-soft); }
+    .worker { left: 1135px; top: 260px; width: 330px; height: 144px; background: var(--teal-soft); }
+    .firestore { left: 1135px; top: 566px; width: 330px; height: 144px; background: #e8edf5; }
+    .gemini { left: 418px; top: 566px; width: 306px; height: 144px; background: #f2e8ff; }
+    .stages { position: absolute; left: 74px; top: 566px; width: 240px; height: 144px; background: #fff; }
+    .stages p { color: var(--ink); font: 700 16px/1.65 Arial, sans-serif; }
+    .arrow { position: absolute; height: 2px; background: var(--ink); }
+    .arrow:after { content: ''; position: absolute; right: -1px; top: -6px; width: 0; height: 0; border-left: 14px solid var(--ink); border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
+    .a1 { left: 314px; top: 338px; width: 104px; }
+    .a2 { left: 724px; top: 338px; width: 80px; }
+    .a3 { left: 1054px; top: 338px; width: 81px; }
+    .a4 { left: 1288px; top: 404px; width: 2px; height: 162px; }
+    .a4:after { right: -6px; top: auto; bottom: -1px; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 14px solid var(--ink); border-bottom: 0; }
+    .a5 { left: 724px; top: 638px; width: 411px; }
+    .a6 { left: 314px; top: 638px; width: 104px; }
+    .note { position: absolute; left: 804px; top: 442px; color: var(--amber); font: 700 14px Arial, sans-serif; }
+    .legend { position: absolute; left: 74px; right: 74px; bottom: 68px; border-top: 1px solid var(--line); padding-top: 19px; display: flex; justify-content: space-between; color: var(--muted); font: 15px Arial, sans-serif; }
+    .legend strong { color: var(--ink); }
+    .tag { display: inline-block; margin-top: 12px; padding: 5px 9px; border-radius: 5px; background: rgba(255,255,255,.65); color: var(--ink); font: 700 12px Arial, sans-serif; }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="eyebrow">JobPilot / target production architecture</div>
+    <h1>From job search to<br>human-reviewed application prep.</h1>
+    <p class="subtitle">A two-service Cloud Run workflow with durable state in Firestore and authenticated event delivery through Pub/Sub.</p>
+    <div class="rule"></div>
+
+    <section class="box frontend"><div class="label">Client</div><h2>React dashboard</h2><p>Vite + TypeScript<br>Search, status polling, review controls</p><span class="tag">HTTPS</span></section>
+    <section class="box api"><div class="label">Service 01</div><h2>API Cloud Run</h2><p>FastAPI routes<br>Creates workflows and publishes IDs</p><span class="tag">Private service</span></section>
+    <section class="box pubsub"><div class="label">Event bus</div><h2>Pub/Sub</h2><p>jobpilot-workflows<br>Push subscription</p><span class="tag">OIDC-authenticated push</span></section>
+    <section class="box worker"><div class="label">Service 02</div><h2>Worker Cloud Run</h2><p>Validates envelope<br>Runs WorkflowWorker</p><span class="tag">Private endpoint</span></section>
+    <section class="box stages"><div class="label">Workflow engine</div><h2>JobPilot stages</h2><p>DISCOVER<br>ANALYZE / RANK<br>PREPARE / REVIEW</p></section>
+    <section class="box gemini"><div class="label">Intelligence</div><h2>Google ADK + Gemini</h2><p>google.adk + google.genai<br>Structured JSON fit analysis</p><span class="tag">Gemini model</span></section>
+    <section class="box firestore"><div class="label">State</div><h2>Cloud Firestore</h2><p>jobpilot-workflows collection<br>Workflow status and preparation packages</p><span class="tag">Durable persistence</span></section>
+
+    <div class="arrow a1"></div><div class="arrow a2"></div><div class="arrow a3"></div><div class="arrow a4"></div><div class="arrow a5"></div><div class="arrow a6"></div>
+    <div class="note">workflow_id message</div>
+    <div class="legend"><span><strong>Google SDK:</strong> Agent Development Kit (ADK) + Google GenAI SDK (`google-genai`)</span><span><strong>Google Cloud services:</strong> Cloud Run, Firestore, Pub/Sub</span></div>
+  </main>
+</body>
+</html>
